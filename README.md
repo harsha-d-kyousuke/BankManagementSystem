@@ -129,18 +129,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 This project is licensed under the MIT License. Free to use, modify, and deploy.
 👨‍💻 Made for learning, finance labs, and portfolio projects.
 
-Build. Learn. Deploy. 🚀
 
-
----
-
-### If you want, I can also:
-✅ Generate a project logo  
-✅ Add preview screenshots to README  
-✅ Write full commit history guidelines  
-✅ Provide Vercel environment config if needed
-
-Would you like me to push this README format directly into your project and customize it with your GitHub username and repo name?
-
-
-ChatGPT can make mistakes. Check important info. See Cookie Preferences.
