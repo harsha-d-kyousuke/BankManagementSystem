@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { User, Transaction, UserStatus, TransactionType } from '../types';
 import { AdjustmentsIcon } from './Icons';
@@ -25,12 +26,12 @@ const TransactionHistory: React.FC<{ transactions: Transaction[] }> = ({ transac
             </thead>
             <tbody>
                 {transactions.map(tx => {
-                    const isCredit = tx.type === TransactionType.DEPOSIT || (tx.type === TransactionType.CORRECTION && tx.amount >= 0);
-                    const amount = tx.amount
+                    const isCredit = tx.amount >= 0;
+                    
                     let typeStyle = 'bg-gray-100 text-gray-800';
                     if (isCredit) {
                         typeStyle = 'bg-green-100 text-green-800';
-                    } else if (tx.type === TransactionType.WITHDRAWAL || tx.type === TransactionType.TRANSFER || (tx.type === TransactionType.CORRECTION && amount < 0)) {
+                    } else {
                         typeStyle = 'bg-red-100 text-red-800';
                     }
 
@@ -44,7 +45,7 @@ const TransactionHistory: React.FC<{ transactions: Transaction[] }> = ({ transac
                                 </span>
                             </td>
                             <td className={`px-4 py-2 text-right font-semibold ${isCredit ? 'text-green-600' : 'text-red-600'}`}>
-                                {isCredit ? '+' : ''}${amount.toFixed(2)}
+                                {isCredit ? '+' : '-'}${Math.abs(tx.amount).toFixed(2)}
                             </td>
                             <td className="px-4 py-2 text-right">${tx.balanceAfter.toFixed(2)}</td>
                         </tr>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 // General UI Icons
@@ -76,35 +77,35 @@ export const ArrowDownIcon: React.FC<{ className?: string }> = ({ className }) =
   </svg>
 );
 
-// --- FIX START: Add missing icons for nutrition tracker ---
+// FIX: Add missing icons for nutrition app features.
 export const FlameIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.362-3.797z" />
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1.001A3.75 3.75 0 0012 18z" />
     </svg>
 );
 
 export const ProteinIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 12a9.75 9.75 0 01-9.75 9.75c-3.956 0-7.48-2.34-9-5.656m9-11.312A9.75 9.75 0 0121.75 12" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 8.25c-2.25.75-4.5 1.5-6.75 2.25m6.75 4.5c-2.25-.75-4.5-1.5-6.75-2.25" />
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
     </svg>
 );
 
 export const CarbsIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM8.25 6.75h.75v.75h-.75v-.75zM9.75 6.75h.75v.75h-.75v-.75zM11.25 6.75h.75v.75h-.75v-.75zM12.75 6.75h.75v.75h-.75v-.75zM14.25 6.75h.75v.75h-.75v-.75zM4.5 19.5v-15A2.25 2.25 0 016.75 2.25h10.5A2.25 2.25 0 0119.5 4.5v15a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5z" />
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5c0-.966.784-1.75 1.75-1.75h3.5a1.75 1.75 0 011.75 1.75V21m-1.75-9V9.75A2.25 2.25 0 0016.5 7.5h-3A2.25 2.25 0 0011.25 9.75V12m-2.25 0V5.625c0-1.036.84-1.875 1.875-1.875h.375c1.036 0 1.875.84 1.875 1.875V12m-3.75 0h-3.75c-1.036 0-1.875-.84-1.875-1.875V7.5c0-1.036.84-1.875 1.875-1.875h3.75c1.036 0 1.875.84 1.875 1.875v2.625" />
     </svg>
 );
 
 export const FatIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.75c-3.78 0-7.25-1.9-9.13-4.95C.99 13.68 3.5 9.25 6.75 6.75S13.68.99 16.8 2.87c3.12 1.88 4.95 5.35 4.95 9.13 0 5.38-4.37 9.75-9.75 9.75z" />
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12.75 19.5v-.75a7.5 7.5 0 00-7.5-7.5H4.5a7.5 7.5 0 000 15h.75a7.5 7.5 0 007.5-7.5zm-4.5 0a3 3 0 013-3h.008a3 3 0 013 3v.008a3 3 0 01-3 3h-.008a3 3 0 01-3-3v-.008z" />
     </svg>
 );
 
 export const PlusIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
     </svg>
 );
 
@@ -119,4 +120,3 @@ export const TrashIcon: React.FC<{ className?: string }> = ({ className }) => (
         <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
     </svg>
 );
-// --- FIX END ---

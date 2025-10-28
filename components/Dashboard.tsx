@@ -1,11 +1,13 @@
+
 import React, { useState } from 'react';
 import { User, Transaction, TransactionType, UserStatus } from '../types';
-import { DepositIcon, TransferIcon, WithdrawalIcon, ArrowDownIcon, ArrowUpIcon } from './Icons';
+import { DepositIcon, TransferIcon, WithdrawalIcon } from './Icons';
 
 interface DashboardProps {
   user: User;
   transactions: Transaction[];
-  onTransaction: (user: User, transaction: Transaction) => void;
+  onSingleUserTransaction: (user: User, transaction: Transaction) => void;
+  onTransferTransaction: (updatedSender: User, updatedRecipient: User, senderTransaction: Transaction, recipientTransaction: Transaction) => void;
   allUsers: User[];
 }
 
@@ -18,9 +20,10 @@ const StatCard: React.FC<{ title: string; value: string; }> = ({ title, value })
 
 const TransactionForm: React.FC<{
     user: User;
-    onTransaction: (user: User, transaction: Transaction) => void;
+    onSingleUserTransaction: (user: User, transaction: Transaction) => void;
+    onTransferTransaction: (updatedSender: User, updatedRecipient: User, senderTransaction: Transaction, recipientTransaction: Transaction) => void;
     allUsers: User[];
-}> = ({ user, onTransaction, allUsers }) => {
+}> = ({ user, onSingleUserTransaction, onTransferTransaction, allUsers }) => {
     const [activeTab, setActiveTab] = useState<TransactionType>(TransactionType.DEPOSIT);
     const [amount, setAmount] = useState('');
     const [toAccount, setToAccount] = useState('');
@@ -37,47 +40,82 @@ const TransactionForm: React.FC<{
             return;
         }
 
-        let newUserState = { ...user };
-        let newTransaction: Omit<Transaction, 'id' | 'timestamp' | 'balanceAfter'>;
+        let updatedUser = { ...user };
 
-        switch (activeTab) {
-            case TransactionType.DEPOSIT:
-                newUserState.balance += numAmount;
-                newTransaction = { userId: user.id, type: TransactionType.DEPOSIT, amount: numAmount, description: description || 'Cash Deposit' };
-                break;
-            case TransactionType.WITHDRAWAL:
-                if (numAmount > user.balance) {
-                    setError('Insufficient funds for this withdrawal.');
-                    return;
-                }
-                newUserState.balance -= numAmount;
-                newTransaction = { userId: user.id, type: TransactionType.WITHDRAWAL, amount: -numAmount, description: description || 'Cash Withdrawal' };
-                break;
-            case TransactionType.TRANSFER:
-                 if (numAmount > user.balance) {
-                    setError('Insufficient funds for this transfer.');
-                    return;
-                }
-                const recipient = allUsers.find(u => u.accountNumber === toAccount && u.id !== user.id);
-                if (!recipient) {
-                    setError('Recipient account number is invalid or is your own account.');
-                    return;
-                }
-                newUserState.balance -= numAmount;
-                newTransaction = { userId: user.id, type: TransactionType.TRANSFER, amount: -numAmount, from: user.accountNumber, to: toAccount, description: description || `Transfer to ${recipient.name}`};
-                break;
-            default:
+        if (activeTab === TransactionType.DEPOSIT) {
+            updatedUser.balance += numAmount;
+            const newTransaction: Transaction = {
+                id: `txn-${new Date().getTime()}`,
+                userId: user.id,
+                type: TransactionType.DEPOSIT,
+                amount: numAmount,
+                description: description || 'Cash Deposit',
+                timestamp: new Date().toISOString(),
+                balanceAfter: updatedUser.balance,
+            };
+            onSingleUserTransaction(updatedUser, newTransaction);
+
+        } else if (activeTab === TransactionType.WITHDRAWAL) {
+            if (numAmount > user.balance) {
+                setError('Insufficient funds for this withdrawal.');
                 return;
+            }
+            updatedUser.balance -= numAmount;
+            const newTransaction: Transaction = {
+                id: `txn-${new Date().getTime()}`,
+                userId: user.id,
+                type: TransactionType.WITHDRAWAL,
+                amount: -numAmount,
+                description: description || 'Cash Withdrawal',
+                timestamp: new Date().toISOString(),
+                balanceAfter: updatedUser.balance,
+            };
+            onSingleUserTransaction(updatedUser, newTransaction);
+
+        } else if (activeTab === TransactionType.TRANSFER) {
+            if (numAmount > user.balance) {
+                setError('Insufficient funds for this transfer.');
+                return;
+            }
+            const recipient = allUsers.find(u => u.accountNumber === toAccount && u.id !== user.id);
+            if (!recipient) {
+                setError('Recipient account number is invalid or is your own account.');
+                return;
+            }
+
+            // Update sender and recipient
+            const updatedSender = { ...user, balance: user.balance - numAmount };
+            const updatedRecipient = { ...recipient, balance: recipient.balance + numAmount };
+            
+            const transactionTime = new Date().getTime();
+
+            // Create two transactions
+            const senderTransaction: Transaction = {
+                id: `txn-${transactionTime}-s`,
+                userId: user.id,
+                type: TransactionType.TRANSFER,
+                amount: -numAmount,
+                from: user.accountNumber,
+                to: toAccount,
+                description: description || `Transfer to ${recipient.name}`,
+                timestamp: new Date(transactionTime).toISOString(),
+                balanceAfter: updatedSender.balance,
+            };
+            
+            const recipientTransaction: Transaction = {
+                 id: `txn-${transactionTime}-r`,
+                userId: recipient.id,
+                type: TransactionType.DEPOSIT, // A transfer is a deposit for the recipient
+                amount: numAmount,
+                from: user.accountNumber,
+                to: toAccount,
+                description: `Transfer from ${user.name}`,
+                timestamp: new Date(transactionTime).toISOString(),
+                balanceAfter: updatedRecipient.balance,
+            };
+            
+            onTransferTransaction(updatedSender, updatedRecipient, senderTransaction, recipientTransaction);
         }
-        
-        const finalTransaction: Transaction = {
-            ...newTransaction,
-            id: `txn-${new Date().getTime()}`,
-            timestamp: new Date().toISOString(),
-            balanceAfter: newUserState.balance,
-        };
-        
-        onTransaction(newUserState, finalTransaction);
         
         // Reset form
         setAmount('');
@@ -161,13 +199,12 @@ const TransactionHistory: React.FC<{ transactions: Transaction[] }> = ({ transac
                 </thead>
                 <tbody>
                     {transactions.map(tx => {
-                       const isCredit = tx.type === TransactionType.DEPOSIT || (tx.type === TransactionType.CORRECTION && tx.amount >= 0);
-                       const displayAmount = (tx.type === TransactionType.CORRECTION) ? tx.amount : tx.amount;
+                       const isCredit = tx.amount >= 0;
                        
                        let typeStyle = 'bg-gray-100 text-gray-800';
                        if (isCredit) {
                            typeStyle = 'bg-green-100 text-green-800';
-                       } else if (tx.type === TransactionType.WITHDRAWAL || tx.type === TransactionType.TRANSFER || (tx.type === TransactionType.CORRECTION && tx.amount < 0)) {
+                       } else {
                            typeStyle = 'bg-red-100 text-red-800';
                        }
                        
@@ -181,7 +218,7 @@ const TransactionHistory: React.FC<{ transactions: Transaction[] }> = ({ transac
                                 </span>
                             </td>
                             <td className={`px-6 py-4 text-right font-semibold ${isCredit ? 'text-green-600' : 'text-red-600'}`}>
-                                {isCredit ? '+' : ''}${displayAmount.toFixed(2)}
+                                {isCredit ? '+' : '-'}${Math.abs(tx.amount).toFixed(2)}
                             </td>
                             <td className="px-6 py-4 text-right">${tx.balanceAfter.toFixed(2)}</td>
                         </tr>
@@ -195,7 +232,7 @@ const TransactionHistory: React.FC<{ transactions: Transaction[] }> = ({ transac
 );
 
 
-const Dashboard: React.FC<DashboardProps> = ({ user, transactions, onTransaction, allUsers }) => {
+const Dashboard: React.FC<DashboardProps> = ({ user, transactions, onSingleUserTransaction, onTransferTransaction, allUsers }) => {
   return (
     <div className="space-y-6 lg:space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -206,7 +243,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user, transactions, onTransaction
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             <div className="lg:col-span-1">
-                <TransactionForm user={user} onTransaction={onTransaction} allUsers={allUsers} />
+                <TransactionForm 
+                    user={user} 
+                    onSingleUserTransaction={onSingleUserTransaction} 
+                    onTransferTransaction={onTransferTransaction} 
+                    allUsers={allUsers} 
+                />
             </div>
             <div className="lg:col-span-2">
                 <TransactionHistory transactions={transactions} />

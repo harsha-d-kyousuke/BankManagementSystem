@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User, Transaction, UserRole, UserStatus, TransactionType } from './types';
 import { MOCK_USERS, MOCK_TRANSACTIONS } from './data';
@@ -37,11 +38,28 @@ const App: React.FC = () => {
   };
   
   // In a real app, these handlers would make API calls to a secure backend.
-  const handleTransaction = (updatedUser: User, newTransaction: Transaction) => {
+  const handleSingleUserTransaction = (updatedUser: User, newTransaction: Transaction) => {
       setUsers(prevUsers => prevUsers.map(u => u.id === updatedUser.id ? updatedUser : u));
       setTransactions(prevTxns => [newTransaction, ...prevTxns].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
       setCurrentUser(updatedUser); // Update current user state
       localStorage.setItem('bankpro_user', JSON.stringify(updatedUser)); // Update storage
+  };
+
+  const handleTransferTransaction = (
+    updatedSender: User,
+    updatedRecipient: User,
+    senderTransaction: Transaction,
+    recipientTransaction: Transaction
+  ) => {
+    setUsers(prevUsers => prevUsers.map(u => {
+        if (u.id === updatedSender.id) return updatedSender;
+        if (u.id === updatedRecipient.id) return updatedRecipient;
+        return u;
+    }));
+    setTransactions(prevTxns => [senderTransaction, recipientTransaction, ...prevTxns].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
+    // Update current user state (who is the sender)
+    setCurrentUser(updatedSender);
+    localStorage.setItem('bankpro_user', JSON.stringify(updatedSender));
   };
 
   const handleUpdateUserStatus = (userId: string, status: UserStatus) => {
@@ -96,7 +114,13 @@ const App: React.FC = () => {
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return <Dashboard user={currentUser} transactions={userTransactions} onTransaction={handleTransaction} allUsers={users} />;
+        return <Dashboard 
+                  user={currentUser} 
+                  transactions={userTransactions} 
+                  onSingleUserTransaction={handleSingleUserTransaction}
+                  onTransferTransaction={handleTransferTransaction}
+                  allUsers={users} 
+                />;
       case 'analytics':
         return <Analytics user={currentUser} transactions={userTransactions} />;
       case 'admin':
@@ -111,7 +135,13 @@ const App: React.FC = () => {
             onCorrectBalance={handleCorrectBalance}
         />;
       default:
-        return <Dashboard user={currentUser} transactions={userTransactions} onTransaction={handleTransaction} allUsers={users} />;
+        return <Dashboard 
+                user={currentUser} 
+                transactions={userTransactions} 
+                onSingleUserTransaction={handleSingleUserTransaction}
+                onTransferTransaction={handleTransferTransaction}
+                allUsers={users} 
+              />;
     }
   };
 

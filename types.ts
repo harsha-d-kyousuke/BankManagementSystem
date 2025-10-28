@@ -32,7 +32,7 @@ export interface Transaction {
   id: string;
   userId: string;
   type: TransactionType;
-  amount: number; // Positive for deposits, negative for withdrawals. Can be signed for CORRECTION type.
+  amount: number; // Positive for deposits/credits, negative for withdrawals/debits.
   from?: string; // Account number
   to?: string;   // Account number
   balanceAfter: number;
@@ -40,7 +40,7 @@ export interface Transaction {
   timestamp: string;
 }
 
-// --- FIX START: Add missing types for nutrition tracker ---
+// FIX: Add missing types for nutrition app features.
 export enum MealType {
   Breakfast = 'Breakfast',
   Lunch = 'Lunch',
@@ -67,4 +67,3 @@ export interface DailyTotals {
   carbohydrates: number;
   fat: number;
 }
-// --- FIX END ---
